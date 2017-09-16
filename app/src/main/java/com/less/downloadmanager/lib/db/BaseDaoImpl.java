@@ -10,9 +10,9 @@ import android.database.sqlite.SQLiteDatabase;
 public abstract class BaseDaoImpl<T> implements BaseDao<T>{
     protected String TAG = this.getClass().getSimpleName();// 获取真实子类的TAG名称
     public BaseDaoImpl(Context context){
-        mHelper = new DBOpenHelper(context);
+        mHelper = new SqlHelper(context);
     }
-    private DBOpenHelper mHelper;
+    private SqlHelper mHelper;
 
     protected SQLiteDatabase getWritableDatabase() {
         return mHelper.getWritableDatabase();
