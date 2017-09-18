@@ -1,9 +1,11 @@
 package com.less.downloadmanager.lib;
 
-import com.less.downloadmanager.lib.interfaces.Downloader;
+import com.less.downloadmanager.lib.request.Callback;
+import com.less.downloadmanager.lib.request.RequestCall;
 import com.less.downloadmanager.lib.util.Platform;
 
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public class DownloadManager {
     public static final String TAG = DownloadManager.class.getSimpleName();
@@ -11,7 +13,6 @@ public class DownloadManager {
     private Config mConfig;
     private Platform mPlatform;
     private Map<String, Downloader> mDownloaderMap;
-
 
     public DownloadManager(Config config) {
         if (config == null) {
@@ -36,4 +37,12 @@ public class DownloadManager {
         return sDownloadManager;
     }
 
+    /** UI线程池 */
+    public Executor getDelivery() {
+        return mPlatform.makeCallbackExecutor();
+    }
+
+    public void execute(RequestCall call,Callback callback){
+
+    }
 }

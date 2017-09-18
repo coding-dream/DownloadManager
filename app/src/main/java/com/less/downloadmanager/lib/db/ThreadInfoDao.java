@@ -1,11 +1,13 @@
 package com.less.downloadmanager.lib.db;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.less.downloadmanager.lib.bean.ThreadInfo;
 import com.less.downloadmanager.lib.util.L;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,6 +68,13 @@ public class ThreadInfoDao extends BaseDaoImpl<ThreadInfo>{
 
     @Override
     public boolean exists(String tag, int threadId) {
-        return false;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from "
+                        + TABLE_NAME
+                        + " where tag = ? and id = ?",
+                new String[]{tag, threadId + ""});
+        boolean isExists = cursor.moveToNext();
+        cursor.close();
+        return isExists;
     }
 }

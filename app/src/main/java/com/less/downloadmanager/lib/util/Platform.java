@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public  class Platform {
     private static final Platform PLATFORM = findPlatform();
-
+    private static Executor executor;
     public static Platform get() {
         return PLATFORM;
     }
@@ -27,7 +27,10 @@ public  class Platform {
     }
 
     public Executor makeCallbackExecutor() {
-        return Executors.newCachedThreadPool();
+        if (executor == null) {
+            executor = Executors.newCachedThreadPool();
+        }
+        return executor;
     }
 
     /** execute 线程 */
@@ -38,7 +41,10 @@ public  class Platform {
     static class Android extends Platform {
         @Override
         public Executor makeCallbackExecutor() {
-            return new Executor() {
+            if (executor != null) {
+                return executor;
+            }
+            return executor = new Executor() {
                 private Handler handler = new Handler(Looper.myLooper());
 
                 @Override

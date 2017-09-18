@@ -5,7 +5,7 @@ import android.util.Log;
 import com.less.downloadmanager.lib.Constants;
 
 public class L {
-    private static final String TAG = "MultiThreadDownload";
+    private static final String TAG = "DownloadManager";
 
     public static void d(String msg) {
         d(TAG, msg);
