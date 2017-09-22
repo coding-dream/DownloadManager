@@ -1,5 +1,7 @@
 package com.less.downloadmanager.lib.request;
 
+import android.content.Context;
+
 import com.less.downloadmanager.lib.DownloadManager;
 
 /**
@@ -13,10 +15,7 @@ public class RequestCall {
         this.getRequest = getRequest;
     }
 
-    public void execute(Callback callback) {
-        if (callback != null) {
-            callback.onBefore(132353);
-        }
-        DownloadManager.getInstance().execute(this,callback);// 仍然交给DownLoadManager调用，有点EventBus的味道
+    public void execute(Context context,Callback callback) {
+        DownloadManager.getInstance(context).execute(this,callback);// 仍然交给DownLoadManager调用，有点EventBus的味道
     }
 }

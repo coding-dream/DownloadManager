@@ -2,6 +2,8 @@ package com.less.downloadmanager.lib;
 
 import android.content.Context;
 
+import com.less.downloadmanager.lib.bean.DownloadInfo;
+import com.less.downloadmanager.lib.bean.ThreadInfo;
 import com.less.downloadmanager.lib.db.DatabaseManager;
 import com.less.downloadmanager.lib.request.Callback;
 import com.less.downloadmanager.lib.request.RequestCall;
@@ -9,6 +11,7 @@ import com.less.downloadmanager.lib.util.L;
 import com.less.downloadmanager.lib.util.Platform;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +25,7 @@ public class DownloadManager {
     private DatabaseManager databaseManager;
     private ExecutorService mExecutorService;
 
-    public DownloadManager(Context context) {
+    private DownloadManager(Context context) {
         // 初始化某些参数
         mPlatform = Platform.get();
         mDownloaderMap = new LinkedHashMap<>();
@@ -32,7 +35,7 @@ public class DownloadManager {
         }
     }
 
-    public static DownloadManager getInstance(){
+    protected static DownloadManager getInstance(){
         return getInstance(null);
     }
 
@@ -132,7 +135,34 @@ public class DownloadManager {
         return false;
     }
 
-    public void deleteData(String tag) {
-        databaseManager.delete(tag);
+    /** 额外API: 获取数据库中已下载文件的信息. */
+    public DownloadInfo getDownloadInfo(String tag) {
+        List<ThreadInfo> threadInfos = databaseManager.getThreadInfos(tag);
+        DownloadInfo downloadInfo = null;
+        if (!threadInfos.isEmpty()) {
+            int finished = 0;
+            int total = 0;
+            for (ThreadInfo info : threadInfos) {
+                finished += info.getFinished();
+                total += (info.getEnd() - info.getStart());
+            }
+            int progress = (int) ((long) finished * 100 / total);
+
+            downloadInfo = new DownloadInfo();
+            downloadInfo.setFinished(finished);
+            downloadInfo.setLength(total);
+            downloadInfo.setProgress(progress);
+        }
+        return downloadInfo;
+    }
+    /** 额外API: 相应tag的downloader是否正在在运行 */
+    public boolean isRunning(String tag) {
+        if (mDownloaderMap.containsKey(tag)) {
+            Downloader downloader = mDownloaderMap.get(tag);
+            if (downloader != null) {
+                return downloader.isRunning();
+            }
+        }
+        return false;
     }
 }

@@ -1,5 +1,7 @@
 package com.less.downloadmanager.lib.request;
 
+import android.content.Context;
+
 import java.io.File;
 import java.util.Map;
 
