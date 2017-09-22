@@ -1,8 +1,6 @@
 package com.less.downloadmanager.lib.task;
 
 import android.os.Process;
-import android.text.TextUtils;
-
 import com.less.downloadmanager.lib.Constants;
 import com.less.downloadmanager.lib.DownloadException;
 import com.less.downloadmanager.lib.bean.DownloadInfo;

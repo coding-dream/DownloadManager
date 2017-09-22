@@ -1,16 +1,18 @@
 package com.less.downloadmanager.lib.bean;
 
+import java.io.RandomAccessFile;
+
 /**
  * Created by Administrator on 2017/9/16.
  */
 
 public class ThreadInfo {
     private int id;
-    private String tag;
-    private String uri;
-    private long start;
-    private long end;
-    private long finished;
+    private String tag;// 下载文件的标识,多线程下载共用此tag.
+    private String uri;// 文件url
+    private long start;// RandomAccessFile 下载开始位置
+    private long end;// RandomAccessFile 下载结束位置
+    private long finished;// 本线程已下载
 
     public ThreadInfo() {
     }

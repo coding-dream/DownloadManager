@@ -46,10 +46,10 @@ public class DatabaseManager {
         return threadInfoDao.find(tag);
     }
 
-    public List<ThreadInfo> getThreadInfos(){
-        return threadInfoDao.findAll();
-    }
-
+    /**
+     * 使用2个条件找到 相应的ThreadInfo,因为每个文件下载所对应的线程数组(字段threadId 【非主键】都是1,2,3,4,5等),
+     * 而字段tag标识url,准确找到某个ThreadInfo
+     */
     public boolean exists(String tag, int threadId) {
         return threadInfoDao.exists(tag, threadId);
     }

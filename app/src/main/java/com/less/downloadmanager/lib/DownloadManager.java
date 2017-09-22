@@ -67,8 +67,8 @@ public class DownloadManager {
      * onDownloadCompleted,
      * onDownloadPaused,
      * onDownloadCanceled,
-     * onDownloadFailed 等操作时候执行onDestroyed */
-    public void onDestroyed(final String key, Downloader downloader) {
+     * onDownloadFailed 等操作时候执行removeDownloader */
+    public void removeDownloader(String key) {
         if (mDownloaderMap.containsKey(key)) {
             mDownloaderMap.remove(key);
         }

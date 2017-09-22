@@ -122,7 +122,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
                         mCallback.onConnectCanceled();
                     }
                 });
-                onDestroy();
+                DownloadManager.getInstance().removeDownloader(mTag);
             }
 
             @Override
@@ -141,7 +141,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
                             mCallback.onConnectFailed(de);
                         }
                     });
-                    onDestroy();
+                    DownloadManager.getInstance().removeDownloader(mTag);
                 }
             }
         });
@@ -181,11 +181,6 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
     }
 
     @Override
-    public void onDestroy() {
-
-    }
-
-    @Override
     public void onDownloadConnecting() {
         // nothing to do
     }
@@ -212,7 +207,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
                     mCallback.onDownloadCompleted();
                 }
             });
-            onDestroy();
+            DownloadManager.getInstance().removeDownloader(mTag);
         }
     }
 
@@ -226,7 +221,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
                     mCallback.onDownloadPaused();
                 }
             });
-            onDestroy();
+            DownloadManager.getInstance().removeDownloader(mTag);
         }
     }
 
@@ -242,7 +237,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
                     mCallback.onDownloadCanceled();
                 }
             });
-            onDestroy();
+            DownloadManager.getInstance().removeDownloader(mTag);
         }
     }
 
@@ -256,7 +251,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
                     mCallback.onDownloadFailed(de);
                 }
             });
-            onDestroy();
+            DownloadManager.getInstance().removeDownloader(mTag);
         }
     }
 
