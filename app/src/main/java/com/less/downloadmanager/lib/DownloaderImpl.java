@@ -204,7 +204,9 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
             mPlatform.execute(new Runnable() {
                 @Override
                 public void run() {
-                    mCallback.onDownloadCompleted();
+                    File file = new File(mDownloadInfo.getDir(), mDownloadInfo.getName());
+                    Object t = mCallback.parseResponse(file);
+                    mCallback.onDownloadCompleted(t);
                 }
             });
             DownloadManager.getInstance().removeDownloader(mTag);

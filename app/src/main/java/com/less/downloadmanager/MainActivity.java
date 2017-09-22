@@ -3,8 +3,10 @@ package com.less.downloadmanager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.less.downloadmanager.lib.DownloadException;
 import com.less.downloadmanager.lib.DownloadManager;
 import com.less.downloadmanager.lib.request.Callback;
+import com.less.downloadmanager.lib.request.FileCallBack;
 import com.less.downloadmanager.lib.request.GetBuilder;
 import com.less.downloadmanager.lib.request.RequestCall;
 import com.less.downloadmanager.lib.request.StringCallback;
@@ -17,23 +19,36 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        String url = "http://www.java1234.com";
+
         // 方式一
         new GetBuilder()
                 .mName("功夫")
                 .folder(new File("/sdcard/"))
-                .uri("http://www.java1234.com")
+                .uri(url)
                 .build()
-                .execute(this,new StringCallback() {
-            @Override
-            public void onError(Exception e, int id) {
+                .execute(this,new FileCallBack() {
+                    @Override
+                    public void onStart() {
 
-            }
+                    }
 
-            @Override
-            public void onResponse(String response, int id) {
+                    @Override
+                    public void onDownloadProgress(long finished, long totalLength, int percent) {
 
-            }
-        });
+                    }
+
+                    @Override
+                    public void onDownloadFailed(DownloadException e) {
+
+                    }
+
+                    @Override
+                    public void onDownloadCompleted(File file) {
+
+                    }
+                });
 
         // 方式二
         RequestCall call = new GetBuilder()
@@ -41,23 +56,26 @@ public class MainActivity extends AppCompatActivity {
                 .folder(new File("/sdcard/"))
                 .uri("http://www.java1234.com")
                 .build();
-        DownloadManager.getInstance(this).execute(call, new Callback() {
+        DownloadManager.getInstance(this).execute(call, new StringCallback() {
             @Override
-            public Object parseNetworkResponse(int id) throws Exception {
-                return null;
-            }
-
-            @Override
-            public void onError(Exception e, int id) {
+            public void onStart() {
 
             }
 
             @Override
-            public void onResponse(Object response, int id) {
+            public void onDownloadFailed(DownloadException e) {
+
+            }
+
+            @Override
+            public void onDownloadCompleted(String s) {
 
             }
         });
 
 
+        String tag = String.valueOf(url.hashCode());
+
+        DownloadManager.getInstance(this).pause(tag);
     }
 }

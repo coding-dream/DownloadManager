@@ -1,5 +1,6 @@
 package com.less.downloadmanager.lib.request;
 
+import com.less.downloadmanager.lib.DownloadException;
 import com.less.downloadmanager.lib.DownloadManager;
 
 import java.io.File;
@@ -11,16 +12,32 @@ import java.io.File;
 public abstract class FileCallBack extends Callback<File>{
 
     @Override
-    public File parseNetworkResponse(int id) throws Exception {
-        return saveFile();
+    public abstract void onStart() ;
+
+    @Override
+    public abstract void onDownloadProgress(long finished, long totalLength, int percent);
+
+    @Override
+    public void onDownloadPaused() {
+        // nothing to do
     }
 
-    public File saveFile(){
-        // io 流操作
-
-        // UI 线程
-        DownloadManager.getInstance().getDelivery().execute(null);
-
-        return new File("");
+    @Override
+    public void onDownloadCanceled() {
+        // nothing to do
     }
+
+    @Override
+    public abstract void onDownloadFailed(DownloadException e);
+
+    @Override
+    public File parseResponse(File file) {
+        // 对原始文件进行操作(暂时不作修改)
+        // ...
+        return file;
+    }
+
+    @Override
+    public abstract void onDownloadCompleted(File file);
+
 }
