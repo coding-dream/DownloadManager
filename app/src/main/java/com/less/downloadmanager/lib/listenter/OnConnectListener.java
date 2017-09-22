@@ -9,7 +9,7 @@ import com.less.downloadmanager.lib.DownloadException;
 public interface OnConnectListener {
     void onConnecting();
 
-    void onConnected(long time, long length, boolean isAcceptRanges);
+    void onConnected(long length, boolean isAcceptRanges);
 
     void onConnectPaused();
 

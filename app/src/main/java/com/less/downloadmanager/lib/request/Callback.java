@@ -6,10 +6,13 @@ package com.less.downloadmanager.lib.request;
 
 public abstract class Callback<T> {
     /** UI Thread */
-    public void onBefore(int id) {}
+    public void onStart() {}
 
     /** UI Thread */
-    public void onAfter(int id) {}
+    public void onConnecting() {}
+
+    /** UI Thread */
+    public void onConnected(long length,boolean isAcceptRanges){};
 
     /** UI Thread */
     public void inProgress(float progress, long total , int id) {}

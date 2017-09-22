@@ -8,6 +8,8 @@ import android.content.Context;
 
 import com.less.downloadmanager.lib.bean.ThreadInfo;
 
+import java.util.List;
+
 /** 相当于Service -> Dao -> Database */
 public class DatabaseManager {
     private static DatabaseManager sDataBaseManager;
@@ -38,5 +40,17 @@ public class DatabaseManager {
 
     public synchronized void update(String tag, int threadId, long finished) {
         threadInfoDao.update(tag, threadId, finished);
+    }
+
+    public List<ThreadInfo> getThreadInfos(String tag) {
+        return threadInfoDao.find(tag);
+    }
+
+    public List<ThreadInfo> getThreadInfos(){
+        return threadInfoDao.findAll();
+    }
+
+    public boolean exists(String tag, int threadId) {
+        return threadInfoDao.exists(tag, threadId);
     }
 }

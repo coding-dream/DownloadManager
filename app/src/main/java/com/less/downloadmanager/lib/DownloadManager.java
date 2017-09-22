@@ -12,25 +12,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DownloadManager {
     public static final String TAG = DownloadManager.class.getSimpleName();
     private static DownloadManager sDownloadManager;
-    private Config mConfig;
     private Platform mPlatform;
     private Map<String, Downloader> mDownloaderMap;
     private DatabaseManager databaseManager;
     private ExecutorService mExecutorService;
 
-    public DownloadManager(Context context,Config config) {
-        if (config == null) {
-            mConfig = new Config();
-        } else {
-            mConfig = config;
-        }
+    public DownloadManager(Context context) {
         // 初始化某些参数
         mPlatform = Platform.get();
         mDownloaderMap = new LinkedHashMap<>();
+        mExecutorService = Executors.newFixedThreadPool(Config.DEFAULT_MAX_THREAD_NUMBER);
         if (context != null) {
             databaseManager = DatabaseManager.getInstance(context);
         }
@@ -41,14 +37,10 @@ public class DownloadManager {
     }
 
     public static DownloadManager getInstance(Context context) {
-        return getInstance(context,null);
-    }
-
-    public static DownloadManager getInstance(Context context,Config config) {
         if (sDownloadManager == null) {
             synchronized (DownloadManager.class) {
                 if (sDownloadManager == null) {
-                    sDownloadManager = new DownloadManager(context,config);
+                    sDownloadManager = new DownloadManager(context);
                 }
             }
         }
@@ -61,10 +53,10 @@ public class DownloadManager {
     }
 
     public void execute(RequestCall call,Callback callback){
-        String url = call.getRequest.mUri;// 使用url.hashcode作Tag
+        CharSequence url = call.getRequest.mUri;// 使用url.hashcode作Tag
         String tag = String.valueOf(url.hashCode());
         if(!alearyRunning(tag)){
-            Downloader downloader = new DownloaderImpl(call,mPlatform,callback,mExecutorService,databaseManager,tag,mConfig);
+            Downloader downloader = new DownloaderImpl(call,mPlatform,callback,mExecutorService,databaseManager,tag);
             mDownloaderMap.put(tag, downloader);
         }
 
@@ -104,7 +96,7 @@ public class DownloadManager {
         }
     }
 
-    /** 取消某个下载任务 */
+    /** 取消某个文件下载 Downloader -》 多个DownloadTasks（多个ThreadInfo） */
     public void cancel(String tag) {
         if (mDownloaderMap.containsKey(tag)) {
             Downloader downloader = mDownloaderMap.get(tag);
@@ -114,7 +106,7 @@ public class DownloadManager {
             mDownloaderMap.remove(tag);
         }
     }
-    /** 取消所有下载任务 */
+    /** 取消所有文件下载 Downloader */
     public void cancelAll() {
         for (Downloader downloader : mDownloaderMap.values()) {
             if (downloader != null) {

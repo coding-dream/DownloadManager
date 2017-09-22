@@ -10,13 +10,13 @@ import java.util.Map;
 public class GetRequest { // Builder模式分离为两个类
     public String mUri;
 
-    private File mFolder;
+    public File mFolder;
 
-    private CharSequence mName;
+    public String mName;
 
     protected Map<String, String> mParams;
 
-    public GetRequest(String uri, File folder, CharSequence name) {
+    public GetRequest(String uri, File folder, String name) {
         this.mUri = uri;
         this.mFolder = folder;
         this.mName =  name;
