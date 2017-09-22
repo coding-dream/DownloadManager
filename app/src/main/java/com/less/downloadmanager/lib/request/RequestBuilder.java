@@ -14,7 +14,7 @@ public abstract class RequestBuilder<T extends RequestBuilder> {
 
     protected File mFolder;
 
-    protected CharSequence mName;
+    protected String mName;
 
     protected Map<String, String> mParams;
 
@@ -28,7 +28,7 @@ public abstract class RequestBuilder<T extends RequestBuilder> {
         return (T) this;
     }
 
-    public T mName(CharSequence name) {
+    public T mName(String name) {
         this.mName = name;
         return (T) this;
     }
