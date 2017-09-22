@@ -2,17 +2,17 @@ package com.less.downloadmanager.lib.task;
 
 /**
  * Created by Limitless on 2017/9/22.
- * 连接Task完成之后-> 下载Task
+ * 首次连接获取下载文件length的Task
  */
 
-public interface DownloadTask extends Runnable{
+public interface ConnectTask extends Runnable{
     void pause();
 
     void cancel();
 
-    boolean isDownloading();
+    boolean isConnecting();
 
-    boolean isComplete();
+    boolean isConnected();
 
     boolean isPaused();
 

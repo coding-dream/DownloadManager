@@ -7,7 +7,7 @@ import com.less.downloadmanager.lib.DownloadManager;
  */
 
 public class RequestCall {
-    private GetRequest getRequest;
+    public GetRequest getRequest;
 
     public RequestCall(GetRequest getRequest) {
         this.getRequest = getRequest;

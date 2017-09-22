@@ -8,7 +8,7 @@ import java.util.Map;
  */
 
 public class GetRequest { // Builder模式分离为两个类
-    private String mUri;
+    public String mUri;
 
     private File mFolder;
 

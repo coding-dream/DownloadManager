@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by Administrator on 2017/9/16.
  */
 
-public abstract class RequestBuilder<T> {
+public abstract class RequestBuilder<T extends RequestBuilder> {
     protected String mUri;
 
     protected File mFolder;
