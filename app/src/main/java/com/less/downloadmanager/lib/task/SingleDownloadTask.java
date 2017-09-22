@@ -48,9 +48,4 @@ public class SingleDownloadTask extends DownloadTaskImpl {
         raf.seek(0);
         return raf;
     }
-
-    @Override
-    protected String getTag() {
-        return this.getClass().getSimpleName();
-    }
 }

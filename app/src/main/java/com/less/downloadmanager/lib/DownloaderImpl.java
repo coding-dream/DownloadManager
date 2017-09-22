@@ -15,6 +15,7 @@ import com.less.downloadmanager.lib.task.MultiDownloadTask;
 import com.less.downloadmanager.lib.task.SingleDownloadTask;
 import com.less.downloadmanager.lib.util.Platform;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -75,7 +76,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
         mConnectTask = new ConnectTaskImpl(mCall.getRequest.mUri, new OnConnectListener() {
             @Override
             public void onConnecting() {
-                mStatus = DownloadStatus.STATUS_CONNECTING;
+                mStatus = DownloadStatus.STATUS_CONNECTING;// 判断isRunning时需要
                 mPlatform.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -107,17 +108,41 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
 
             @Override
             public void onConnectPaused() {
-
+                onDownloadPaused();
             }
 
             @Override
             public void onConnectCanceled() {
-
+                deleteFromDB();
+                deleteFile();
+                mStatus = DownloadStatus.STATUS_CANCELED;
+                mPlatform.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallback.onConnectCanceled();
+                    }
+                });
+                onDestroy();
             }
 
             @Override
-            public void onConnectFailed(DownloadException de) {
-
+            public void onConnectFailed(final DownloadException de) {
+                if (mConnectTask.isCanceled()) {
+                    // despite connection is failed, the entire downloader is canceled
+                    onConnectCanceled();
+                } else if (mConnectTask.isPaused()) {
+                    // despite connection is failed, the entire downloader is paused
+                    onDownloadPaused();
+                } else {
+                    mStatus = DownloadStatus.STATUS_FAILED;
+                    mPlatform.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mCallback.onConnectFailed(de);
+                        }
+                    });
+                    onDestroy();
+                }
             }
         });
         mExecutor.execute(mConnectTask);
@@ -127,13 +152,13 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
     public void pause() {
         // 停止连接任务
         if (mConnectTask != null) {
-            mConnectTask.pause();
+            mConnectTask.pause();// mConnectTask.pause() 设置ConnectTask中的标志,正在网络连接过程中 if(flag) 触发回调.
         }
         // 停止下载任务组
         for (DownloadTask task : mDownloadTasks) {
-            task.pause();
+            task.pause();// task.pause() 设置task.pause()中的标志,正在下载过程中, if(flag) 触发回调onDownloadPaused,由于多线程,会触发多次,但由于不满足isAllPaused
         }
-        //
+        // 由于task是一组任务,for(task : tasks) 不满足isAllPaused,执行到此处才满足isAllPaused,此时主动调用onDownloadPaused才执行方法体回调给前端（当所有线程都停下来,取消操作只需回调给用户一次即可）。
         if (mStatus != DownloadStatus.STATUS_PROGRESS) {
             onDownloadPaused();
         }
@@ -162,32 +187,77 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
 
     @Override
     public void onDownloadConnecting() {
-
+        // nothing to do
     }
 
     @Override
-    public void onDownloadProgress(long finished, long length) {
-
+    public void onDownloadProgress(final long finished, final long length) {
+        final int percent = (int) (finished * 100 / length);
+        mPlatform.execute(new Runnable() {
+            @Override
+            public void run() {
+                mCallback.onDownloadProgress(finished, length, percent);
+            }
+        });
     }
 
     @Override
     public void onDownloadCompleted() {
-
+        if (isAllComplete()) {
+            deleteFromDB();
+            mStatus = DownloadStatus.STATUS_COMPLETED;
+            mPlatform.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onDownloadCompleted();
+                }
+            });
+            onDestroy();
+        }
     }
 
     @Override
     public void onDownloadPaused() {
-
+        if (isAllPaused()) {
+            mStatus = DownloadStatus.STATUS_PAUSED;
+            mPlatform.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onDownloadPaused();
+                }
+            });
+            onDestroy();
+        }
     }
 
     @Override
     public void onDownloadCanceled() {
-
+        if (isAllCanceled()) {
+            deleteFromDB();
+            deleteFile();
+            mStatus = DownloadStatus.STATUS_CANCELED;
+            mPlatform.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onDownloadCanceled();
+                }
+            });
+            onDestroy();
+        }
     }
 
     @Override
-    public void onDownloadFailed(DownloadException de) {
-
+    public void onDownloadFailed(final DownloadException de) {
+        if (isAllFailed()) {
+            mStatus = DownloadStatus.STATUS_FAILED;
+            mPlatform.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onDownloadFailed(de);
+                }
+            });
+            onDestroy();
+        }
     }
 
     // ===================== 下载 =====================
@@ -247,5 +317,64 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
         return threadInfo;
     }
 
+    /**  */
+    private boolean isAllComplete() {
+        boolean allFinished = true;
+        for (DownloadTask task : mDownloadTasks) {
+            if (!task.isComplete()) {
+                allFinished = false;
+                break;
+            }
+        }
+        return allFinished;
+    }
 
+    /**
+     * isAllComplete,isAllFailed 和isAllPaused,isAllCanceled 稍有不一样的地方是,后者可以手动暂停或取消一个下载(即所有Task),
+     * 但是前者则有可能一个下载 中的某个task(thread)出现错误,这样就好像下载到某一个位置卡住了一样,由于保存到数据库,所以暂停一下
+     * 再继续下载(从数据库重新构建threads)就OK了,如果一个出现故障->程序设计为《下载失败》的话 就失去多线程断点下载的意义了。
+     */
+    private boolean isAllFailed() {
+        boolean allFailed = true;
+        for (DownloadTask task : mDownloadTasks) {
+            if (task.isDownloading()) {
+                allFailed = false;
+                break;
+            }
+        }
+        return allFailed;
+    }
+
+    private boolean isAllPaused() {
+        boolean allPaused = true;
+        for (DownloadTask task : mDownloadTasks) {
+            if (task.isDownloading()) {
+                allPaused = false;
+                break;
+            }
+        }
+        return allPaused;
+    }
+
+    private boolean isAllCanceled() {
+        boolean allCanceled = true;
+        for (DownloadTask task : mDownloadTasks) {
+            if (task.isDownloading()) {
+                allCanceled = false;
+                break;
+            }
+        }
+        return allCanceled;
+    }
+
+    private void deleteFromDB() {
+        mDBManager.delete(mTag);
+    }
+
+    private void deleteFile() {
+        File file = new File(mDownloadInfo.getDir(), mDownloadInfo.getName());
+        if (file.exists() && file.isFile()) {
+            file.delete();
+        }
+    }
 }

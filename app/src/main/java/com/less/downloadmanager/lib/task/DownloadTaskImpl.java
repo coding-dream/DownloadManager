@@ -27,7 +27,6 @@ import java.util.Map;
  */
 
 public abstract class DownloadTaskImpl implements DownloadTask {
-    private String mTag;
 
     private DownloadInfo mDownloadInfo;
     private ThreadInfo mThreadInfo;
@@ -41,11 +40,6 @@ public abstract class DownloadTaskImpl implements DownloadTask {
         this.mDownloadInfo = downloadInfo;
         this.mThreadInfo = threadInfo;
         this.mOnDownloadListener = listener;
-
-        this.mTag = getTag();
-        if (TextUtils.isEmpty(mTag)) {
-            mTag = this.getClass().getSimpleName();
-        }
     }
 
     @Override
@@ -226,6 +220,4 @@ public abstract class DownloadTaskImpl implements DownloadTask {
     protected abstract Map<String, String> getHttpHeaders(ThreadInfo info);
 
     protected abstract RandomAccessFile getRandomAccessFile(File dir, String name, long offset) throws IOException;
-
-    protected abstract String getTag();
 }

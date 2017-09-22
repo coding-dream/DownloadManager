@@ -1,6 +1,5 @@
 package com.less.downloadmanager.lib.task;
 
-import com.less.downloadmanager.lib.DownloaderImpl;
 import com.less.downloadmanager.lib.bean.DownloadInfo;
 import com.less.downloadmanager.lib.bean.ThreadInfo;
 import com.less.downloadmanager.lib.db.DatabaseManager;
@@ -58,11 +57,6 @@ public class MultiDownloadTask extends DownloadTaskImpl{
         RandomAccessFile raf = new RandomAccessFile(file, "rwd");
         raf.seek(offset);
         return raf;
-    }
-
-    @Override
-    protected String getTag() {
-        return this.getClass().getSimpleName();
     }
 }
 
