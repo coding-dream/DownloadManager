@@ -29,7 +29,7 @@ public class DownloadManager {
         // 初始化某些参数
         mPlatform = Platform.get();
         mDownloaderMap = new LinkedHashMap<>();
-        mExecutorService = Executors.newFixedThreadPool(Config.DEFAULT_MAX_THREAD_NUMBER);
+        mExecutorService = Executors.newFixedThreadPool(Constants.CONFIG.DEFAULT_MAX_THREAD_NUMBER);
         if (context != null) {
             databaseManager = DatabaseManager.getInstance(context);
         }

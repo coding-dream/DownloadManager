@@ -299,7 +299,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
         // init threadInfo from db
         final List<ThreadInfo> threadInfos = mDBManager.getThreadInfos(mTag);
         if (threadInfos.isEmpty()) {
-            int threadNum = Config.DEFAULT_THREAD_NUMBER;
+            int threadNum = Constants.CONFIG.DEFAULT_THREAD_NUMBER;
             for (int i = 0; i < threadNum; i++) {
                 // calculate average
                 final long average = length / threadNum;
