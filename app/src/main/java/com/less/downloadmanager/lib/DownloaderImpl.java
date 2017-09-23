@@ -13,6 +13,7 @@ import com.less.downloadmanager.lib.task.ConnectTaskImpl;
 import com.less.downloadmanager.lib.task.DownloadTask;
 import com.less.downloadmanager.lib.task.MultiDownloadTask;
 import com.less.downloadmanager.lib.task.SingleDownloadTask;
+import com.less.downloadmanager.lib.util.L;
 import com.less.downloadmanager.lib.util.Platform;
 
 import java.io.File;
@@ -44,6 +45,8 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
 
     private List<DownloadTask> mDownloadTasks;// 下载 Tasks（每一个文件下载 -> 多个线程的DownloadTasks）
 
+    private int tempPercent;// 用于progress回调次数
+
     public DownloaderImpl(RequestCall call, Platform platform, Callback callback, ExecutorService executorService, DatabaseManager databaseManager, String tag) {
         this.mCall = call;
         this.mPlatform = platform;
@@ -54,6 +57,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
 
         mDownloadInfo = new DownloadInfo(call.getRequest.mName, call.getRequest.mUri, call.getRequest.mFolder);
         mDownloadTasks = new LinkedList<>();
+        if(mCallback == null) mCallback = Callback.CALLBACK_DEFAULT;
     }
 
     @Override
@@ -188,12 +192,15 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
     @Override
     public void onDownloadProgress(final long finished, final long length) {
         final int percent = (int) (finished * 100 / length);
-        mPlatform.execute(new Runnable() {
-            @Override
-            public void run() {
-                mCallback.onDownloadProgress(finished, length, percent);
-            }
-        });
+        if(percent != tempPercent) {// 只有当percent变化时候才回调
+            mPlatform.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onDownloadProgress(finished, length, percent);
+                }
+            });
+        }
+        tempPercent = percent;
     }
 
     @Override
@@ -268,6 +275,8 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
     }
 
     private void initDownloadTasks(long length, boolean acceptRanges) {
+        String log = acceptRanges == true ? "多线程下载" : "单线程下载";
+        L.d("================================> " + log);
         mDownloadTasks.clear();
         if (acceptRanges) {
             List<ThreadInfo> threadInfos = getMultiThreadInfos(length);

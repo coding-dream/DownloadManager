@@ -198,12 +198,13 @@ public abstract class DownloadTaskImpl implements DownloadTask {
                 }
                 raf.write(buffer, 0, len);
                 mThreadInfo.setFinished(mThreadInfo.getFinished() + len);
-                synchronized (mOnDownloadListener) {
+                synchronized (mOnDownloadListener) {// 所有的线程使用的是同一个mOnDownloadListener
+                    // 所有线程操作的是同一个对象mDownloadInfo
                     mDownloadInfo.setFinished(mDownloadInfo.getFinished() + len);
                     mOnDownloadListener.onDownloadProgress(mDownloadInfo.getFinished(), mDownloadInfo.getLength());
                 }
             } catch (IOException e) {
-                updateDB(mThreadInfo);
+                updateDB(mThreadInfo);// 只在pause 和 传输时异常更新了DB,其他异常没有更新(所以出错时候个别线程没有updateDB),没有更新的不用担心，重新start 重新下载那部分数据。
                 throw new DownloadException(DownloadStatus.STATUS_FAILED, e);
             }
         }

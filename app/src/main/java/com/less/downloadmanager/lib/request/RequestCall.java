@@ -16,6 +16,6 @@ public class RequestCall {
     }
 
     public void execute(Context context,Callback callback) {
-        DownloadManager.getInstance(context).execute(this,callback);// 仍然交给DownLoadManager调用，有点EventBus的味道
+        DownloadManager.getInstance(context).start(this,callback);// 仍然交给DownLoadManager调用，有点EventBus的味道
     }
 }

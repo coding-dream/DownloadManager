@@ -3,6 +3,7 @@ package com.less.downloadmanager.lib.task;
 import com.less.downloadmanager.lib.bean.DownloadInfo;
 import com.less.downloadmanager.lib.bean.ThreadInfo;
 import com.less.downloadmanager.lib.listenter.OnDownloadListener;
+import com.less.downloadmanager.lib.util.L;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class SingleDownloadTask extends DownloadTaskImpl {
     @Override
     protected void insertIntoDB(ThreadInfo info) {
         // don't support
+        L.d("SingleDownloadTask: insertIntoDB-> not implement");
     }
 
     @Override

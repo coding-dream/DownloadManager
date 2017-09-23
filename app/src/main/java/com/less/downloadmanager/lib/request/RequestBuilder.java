@@ -16,6 +16,8 @@ public abstract class RequestBuilder<T extends RequestBuilder> {
 
     protected String mName;
 
+    protected String mTag;
+
     protected Map<String, String> mParams;
 
     public T uri(String uri){
@@ -28,8 +30,13 @@ public abstract class RequestBuilder<T extends RequestBuilder> {
         return (T) this;
     }
 
-    public T mName(String name) {
+    public T name(String name) {
         this.mName = name;
+        return (T) this;
+    }
+
+    public T tag(String tag) {
+        this.mTag = tag;
         return (T) this;
     }
 

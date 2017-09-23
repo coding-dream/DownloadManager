@@ -4,6 +4,7 @@ import com.less.downloadmanager.lib.bean.DownloadInfo;
 import com.less.downloadmanager.lib.bean.ThreadInfo;
 import com.less.downloadmanager.lib.db.DatabaseManager;
 import com.less.downloadmanager.lib.listenter.OnDownloadListener;
+import com.less.downloadmanager.lib.util.L;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class MultiDownloadTask extends DownloadTaskImpl{
     @Override
     protected void insertIntoDB(ThreadInfo info) {
         if (!mDBManager.exists(info.getTag(), info.getId())) {
+            L.d("MultiDownloadTask: insertIntoDB->" + info.getId() + " | " + info.getTag());
             mDBManager.add(info);
         }
     }
@@ -39,6 +41,7 @@ public class MultiDownloadTask extends DownloadTaskImpl{
 
     @Override
     protected void updateDB(ThreadInfo info) {
+        L.d("MultiDownloadTask(pause): updateDB-> " + info.getId() + " | " + info.getTag());
         mDBManager.update(info.getTag(), info.getId(), info.getFinished());
     }
 

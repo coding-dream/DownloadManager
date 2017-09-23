@@ -20,6 +20,6 @@ public class GetBuilder extends RequestBuilder{
     @Override
     public RequestCall build() {
 
-        return new GetRequest(mUri,mFolder,mName).build();
+        return new GetRequest(mUri,mFolder,mName,mTag).build();
     }
 }

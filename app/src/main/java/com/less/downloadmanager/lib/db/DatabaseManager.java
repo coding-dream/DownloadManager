@@ -21,7 +21,7 @@ public class DatabaseManager {
 
     public static DatabaseManager getInstance(Context context) {
         if (sDataBaseManager == null) {
-            synchronized (sDataBaseManager) {
+            synchronized (DatabaseManager.class) {
                 if (sDataBaseManager == null) {
                     sDataBaseManager = new DatabaseManager(context);
                 }
@@ -42,7 +42,7 @@ public class DatabaseManager {
         threadInfoDao.update(tag, threadId, finished);
     }
 
-    public List<ThreadInfo> getThreadInfos(String tag) {
+    public synchronized List<ThreadInfo> getThreadInfos(String tag) {
         return threadInfoDao.find(tag);
     }
 
@@ -50,7 +50,7 @@ public class DatabaseManager {
      * 使用2个条件找到 相应的ThreadInfo,因为每个文件下载所对应的线程数组(字段threadId 【非主键】都是1,2,3,4,5等),
      * 而字段tag标识url,准确找到某个ThreadInfo
      */
-    public boolean exists(String tag, int threadId) {
+    public synchronized boolean exists(String tag, int threadId) {
         return threadInfoDao.exists(tag, threadId);
     }
 }

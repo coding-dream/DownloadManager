@@ -55,12 +55,12 @@ public class DownloadManager {
         return mPlatform.makeCallbackExecutor();
     }
 
-    public void execute(RequestCall call,Callback callback){
-        CharSequence url = call.getRequest.mUri;// 使用url.hashcode作Tag
-        String tag = String.valueOf(url.hashCode());
+    public void start(RequestCall call,Callback callback){
+        String tag = call.getRequest.mTag;
         if(!alearyRunning(tag)){
             Downloader downloader = new DownloaderImpl(call,mPlatform,callback,mExecutorService,databaseManager,tag);
             mDownloaderMap.put(tag, downloader);
+            downloader.start();
         }
 
     }
@@ -71,9 +71,9 @@ public class DownloadManager {
      * onDownloadPaused,
      * onDownloadCanceled,
      * onDownloadFailed 等操作时候执行removeDownloader */
-    public void removeDownloader(String key) {
-        if (mDownloaderMap.containsKey(key)) {
-            mDownloaderMap.remove(key);
+    public void removeDownloader(String tag) {
+        if (mDownloaderMap.containsKey(tag)) {
+            mDownloaderMap.remove(tag);
         }
     }
 
