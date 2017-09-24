@@ -1,8 +1,10 @@
 package com.less.downloadmanager;
 
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.less.downloadmanager.lib.DownloadException;
 import com.less.downloadmanager.lib.DownloadManager;
@@ -15,116 +17,74 @@ import com.less.downloadmanager.lib.util.L;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                download();
-            }
-        });
+        findViewById(R.id.btn_start).setOnClickListener(this);
+        findViewById(R.id.btn_pause).setOnClickListener(this);
+
+        progressBar = (ProgressBar) findViewById(R.id.pb_download);
     }
 
-    private void download() {
-        String url = "http://220.194.199.176/3/k/d/t/k/kdtkitfgpnckofxelsmuqcszwoofpz/hc.yinyuetai.com/5F9F015E739DD025A8453AB56AFF9AFD.mp4?sc=c8ba91e189b49af0&br=779&vid=3040202&aid=35421&area=JP&vst=0&ptp=mv&rd=yinyuetai.com";
+    @Override
+    public void onClick(View view) {
+        String name = "中岛美雪.mp4";
+        String url = "http://220.194.199.176/4/k/l/p/d/klpdruzqjxgpkyoxeudmpjqvnwazxp/hc.yinyuetai.com/7348015EA9536F7A49FDD32FA0B025B2.mp4?sc=1e26e64ef11e8626&br=781&vid=3048701&aid=32393&area=ML&vst=0&ptp=mv&rd=yinyuetai.com";
         String tag = String.valueOf(url.hashCode());
-        // 方式一
-        new GetBuilder()
-                .name("JOKER_山本彩")
-                .folder(new File("/sdcard/"))
-                .uri(url)
-                .tag(tag)
-                .build()
-                .execute(this, new Callback() {
-                    @Override
-                    public void onStart() {
-                        System.out.println("begin===========>");
-                    }
 
-                    @Override
-                    public void onDownloadProgress(long finished, long totalLength, int percent) {
-                        System.out.println("finished: " + finished + " totalLength:" + totalLength + "percent: " + percent);
-                    }
+        switch (view.getId()) {
+            case R.id.btn_start:
+                start(name,url,tag);
+                break;
+            case R.id.btn_pause:
+                pause(tag);
+                break;
+            default:
+                break;
 
-                    @Override
-                    public void onDownloadPaused() {
-                        System.out.println("============》 onDownloadPaused");
-                    }
+        }
+    }
 
-                    @Override
-                    public void onDownloadCanceled() {
-                        System.out.println("============》 onDownloadCanceled");
-                    }
+    private void start(String name,String url,String tag) {
+        File folder = Environment.getExternalStorageDirectory();
 
-                    @Override
-                    public void onDownloadFailed(DownloadException e) {
-                        System.out.println("============》 onDownloadFailed" + e);
-                    }
-
-                    @Override
-                    public Object parseResponse(File file) {
-                        System.out.println("============》 parseResponse");
-                        return null;
-                    }
-
-                    @Override
-                    public void onDownloadCompleted(Object o) {
-                        System.out.println("============》 onDownloadCompleted");
-                    }
-                });
-                /*
-                .execute(this,new FileCallBack() {
-                    @Override
-                    public void onStart() {
-                        L.d("开始下载");
-                    }
-
-                    @Override
-                    public void onDownloadProgress(long finished, long totalLength, int percent) {
-                        L.d("finished: " + finished + " totalLength:" + totalLength + "percent: " + percent);
-                    }
-
-                    @Override
-                    public void onDownloadFailed(DownloadException e) {
-                        L.d("下载失败");
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onDownloadCompleted(File file) {
-                        L.d("下载完成" + file.getAbsolutePath());
-                    }
-                });
-        */
-
-        /*
         // 方式二(文本类型的内容获取)
         RequestCall call = new GetBuilder()
-                .name("功夫")
-                .folder(new File("/sdcard/"))
-                .uri("http://www.java1234.com/a/javabook/javabase/2017/0916/8936.html")
-                .tag("xxx")
+                .name(name)
+                .folder(folder)
+                .uri(url)
+                .tag(tag)
                 .build();
-        DownloadManager.getInstance(this).start(call, new StringCallback() {
+        DownloadManager.getInstance(this).start(call, new FileCallBack() {
             @Override
             public void onStart() {
+                L.d("=====> onStart");
+            }
 
+            @Override
+            public void onDownloadProgress(long finished, long totalLength, int percent) {
+                L.d("=====> onDownloadProgress: " + percent);
+                progressBar.setProgress(percent);
             }
 
             @Override
             public void onDownloadFailed(DownloadException e) {
-
+                e.printStackTrace();
+                L.d("=====> onDownloadFailed: " + e.getErrorMessage());
             }
 
             @Override
-            public void onDownloadCompleted(String s) {
-
+            public void onDownloadCompleted(File file) {
+                L.d("=====> onDownloadCompleted: " + file.getAbsolutePath());
             }
         });
-        */
+    }
+
+    private void pause(String tag) {
+        DownloadManager.getInstance(this).pause(tag);
     }
 }

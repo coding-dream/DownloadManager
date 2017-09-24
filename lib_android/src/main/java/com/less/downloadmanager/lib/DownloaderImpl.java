@@ -36,7 +36,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
 
     private String mTag;
 
-    // ================= //
+    /** ============ 重要参数,注意设置的时机(MultiTask:isAllPaused,isAllFaild等) ============ */
     private int mStatus;
 
     private DownloadInfo mDownloadInfo;
@@ -91,28 +91,30 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
 
             @Override
             public void onConnected(final long length, final boolean isAcceptRanges) {
-                if (mConnectTask.isCanceled()) {
-                    // despite connection is finished, the entire downloader is canceled
-                    onConnectCanceled();
-                } else {
-                    mStatus = DownloadStatus.STATUS_CONNECTED;
-                    mPlatform.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            mCallback.onConnected(length,isAcceptRanges);
-                        }
-                    });
+                mStatus = DownloadStatus.STATUS_CONNECTED;
+                mPlatform.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallback.onConnected(length,isAcceptRanges);
+                    }
+                });
 
-                    // =============== 下载 ===============
-                    mDownloadInfo.setAcceptRanges(isAcceptRanges);
-                    mDownloadInfo.setLength(length);
-                    download(length, isAcceptRanges);
-                }
+                // =============== 下载 ===============
+                mDownloadInfo.setAcceptRanges(isAcceptRanges);
+                mDownloadInfo.setLength(length);
+                download(length, isAcceptRanges);
             }
 
             @Override
             public void onConnectPaused() {
-                onDownloadPaused();
+                mStatus = DownloadStatus.STATUS_PAUSED;
+                mPlatform.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallback.onConnectPaused();
+                    }
+                });
+                DownloadManager.getInstance().removeDownloader(mTag);
             }
 
             @Override
@@ -131,22 +133,14 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
 
             @Override
             public void onConnectFailed(final DownloadException de) {
-                if (mConnectTask.isCanceled()) {
-                    // despite connection is failed, the entire downloader is canceled
-                    onConnectCanceled();
-                } else if (mConnectTask.isPaused()) {
-                    // despite connection is failed, the entire downloader is paused
-                    onDownloadPaused();
-                } else {
-                    mStatus = DownloadStatus.STATUS_FAILED;
-                    mPlatform.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            mCallback.onConnectFailed(de);
-                        }
-                    });
-                    DownloadManager.getInstance().removeDownloader(mTag);
-                }
+                mStatus = DownloadStatus.STATUS_FAILED;
+                mPlatform.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallback.onConnectFailed(de);
+                    }
+                });
+                DownloadManager.getInstance().removeDownloader(mTag);
             }
         });
         mExecutor.execute(mConnectTask);
@@ -154,16 +148,18 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
 
     @Override
     public void pause() {
+        // ============= 异步回调(设置标志位,连接过程中抛出异常) =============
         // 停止连接任务
         if (mConnectTask != null) {
             mConnectTask.pause();// mConnectTask.pause() 设置ConnectTask中的标志,正在网络连接过程中 if(flag) 触发回调.
         }
+        // ============= 同步回调(仅设置标志位->就回调) =============
         // 停止下载任务组
         for (DownloadTask task : mDownloadTasks) {
             task.pause();// task.pause() 设置task.pause()中的标志,正在下载过程中, if(flag) 触发回调onDownloadPaused,由于多线程,会触发多次,但由于不满足isAllPaused
         }
         // 由于task是一组任务,for(task : tasks) 不满足isAllPaused,执行到此处才满足isAllPaused,此时主动调用onDownloadPaused才执行方法体回调给前端（当所有线程都停下来,取消操作只需回调给用户一次即可）。
-        if (mStatus != DownloadStatus.STATUS_PROGRESS) {
+        if (mStatus != DownloadStatus.STATUS_PROGRESS) {// 当下载出现异常时候,条件成立。
             onDownloadPaused();
         }
     }
@@ -207,6 +203,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
     public void onDownloadCompleted() {
         if (isAllComplete()) {
             deleteFromDB();
+            // mStatus只在isAllComplete时候设置,(MultiDownloadTask)每个单独的Task回调不做任何事.
             mStatus = DownloadStatus.STATUS_COMPLETED;
             mPlatform.execute(new Runnable() {
                 @Override
@@ -223,6 +220,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
     @Override
     public void onDownloadPaused() {
         if (isAllPaused()) {
+            // mStatus只在isAllComplete时候设置,(MultiDownloadTask)每个单独的Task回调不做任何事.
             mStatus = DownloadStatus.STATUS_PAUSED;
             mPlatform.execute(new Runnable() {
                 @Override
@@ -239,6 +237,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
         if (isAllCanceled()) {
             deleteFromDB();
             deleteFile();
+            // mStatus只在isAllComplete时候设置,(MultiDownloadTask)每个单独的Task回调不做任何事.
             mStatus = DownloadStatus.STATUS_CANCELED;
             mPlatform.execute(new Runnable() {
                 @Override

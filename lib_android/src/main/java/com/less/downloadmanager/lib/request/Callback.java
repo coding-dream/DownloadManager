@@ -21,6 +21,11 @@ public abstract class Callback<T> {
     public void onConnected(long length,boolean isAcceptRanges){};
 
     /** UI Thread */
+    public void onConnectPaused() {
+        // nothing to do(because downloaderImpl.pause() callback.onDownloadPaused()  )
+    }
+
+    /** UI Thread */
     public void onConnectCanceled(){
         onDownloadCanceled();// 把onConnectCanceled 当做 onDownloadCanceled 处理
     };

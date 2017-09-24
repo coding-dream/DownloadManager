@@ -50,7 +50,7 @@ public class DownloadManager {
 
     public void start(RequestCall call,Callback callback){
         String tag = call.getRequest.mTag;
-        if(!alearyRunning(tag)){
+        if(notRunning(tag)){
             Downloader downloader = new DownloaderImpl(call,mPlatform,callback,mExecutorService,databaseManager,tag);
             mDownloaderMap.put(tag, downloader);
             downloader.start();
@@ -78,7 +78,6 @@ public class DownloadManager {
                     downloader.pause();
                 }
             }
-            mDownloaderMap.remove(tag);
         }
     }
 
@@ -113,19 +112,19 @@ public class DownloadManager {
         }
     }
 
-    private boolean alearyRunning(String tag) {
+    private boolean notRunning(String tag) {
         if (mDownloaderMap.containsKey(tag)) {
             Downloader downloader = mDownloaderMap.get(tag);
             if (downloader != null) {
                 if (downloader.isRunning()) {
                     L.e("Task has been started!");
-                    return true;
+                    return false;
                 } else {
                     throw new IllegalStateException("Downloader instance with same tag has not been destroyed!");
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /** 额外API: 获取数据库中已下载文件的信息. */

@@ -57,7 +57,7 @@ public class DownloadManager {
 
     public void start(RequestCall call,Callback callback){
         String tag = call.getRequest.mTag;
-        if(!alearyRunning(tag)){
+        if(notRunning(tag)){
             Downloader downloader = new DownloaderImpl(call,mPlatform,callback,mExecutorService,databaseManager,tag);
             mDownloaderMap.put(tag, downloader);
             downloader.start();
@@ -65,18 +65,44 @@ public class DownloadManager {
 
     }
     /**
-     * 当downloader onConnectCanceled,
-     * onConnectFailed,
-     * onDownloadCompleted,
-     * onDownloadPaused,
-     * onDownloadCanceled,
-     * onDownloadFailed 等操作时候执行removeDownloader */
+     * 当downloader (6个)
+     * onConnectCanceled(connect task),
+     * onConnectFailed(connect task),
+     *
+     * onDownloadCompleted(all task),
+     * onDownloadPaused(all task),
+     * onDownloadCanceled(all task),
+     * onDownloadFailed(all task)
+     * 等操作时候执行removeDownloader */
     public void removeDownloader(String tag) {
         if (mDownloaderMap.containsKey(tag)) {
             mDownloaderMap.remove(tag);
         }
     }
 
+    /** little bug (already fix):
+     *
+     * 在测试过程中，发现如果快速不断交替点击start,pause
+     * 会出现2个以上的Downloader同时下载并回调的情况
+     * 分析记录:原bug代码
+     *    public void pause(String tag) {
+     *        if (mDownloaderMap.containsKey(tag)) {
+     *           Downloader downloader = mDownloaderMap.get(tag);
+     *               if (downloader != null) {
+     *                   if (downloader.isRunning()) {
+     *                        downloader.pause();
+     *                    }
+     *                }
+     *               mDownloaderMap.remove(tag);// 重复remove 导致bug
+     *       }
+     *    }
+     * Android&JavaFx等平台在同一线程内,点击btn1,btn2,事件执行都是顺序完成的(等同代码执行顺序),
+     * downloader.pause();仅仅是设置标志位(alltask.pause())
+     * start pause 几乎同时点击的情况下产生bug,
+     * 突发情况: 同时快速点击start-> pause-> 在ConnectTask时期被paused(而此种情况下回调是异步的,见DownloaderImpl.pause方法)
+     * 虽然不容易描述,但是mDownloaderMap.remove(tag)会导致start方法的mDownloaderMap.put(tag, downloader);两次以上,
+     * 其中一次如果已经启动线程就不再受控制了.
+     */
     public void pause(String tag) {
         if (mDownloaderMap.containsKey(tag)) {
             Downloader downloader = mDownloaderMap.get(tag);
@@ -85,7 +111,6 @@ public class DownloadManager {
                     downloader.pause();
                 }
             }
-            mDownloaderMap.remove(tag);
         }
     }
 
@@ -106,7 +131,6 @@ public class DownloadManager {
             if (downloader != null) {
                 downloader.cancel();
             }
-            mDownloaderMap.remove(tag);
         }
     }
     /** 取消所有文件下载 Downloader */
@@ -120,19 +144,19 @@ public class DownloadManager {
         }
     }
 
-    private boolean alearyRunning(String tag) {
+    private boolean notRunning(String tag) {
         if (mDownloaderMap.containsKey(tag)) {
             Downloader downloader = mDownloaderMap.get(tag);
             if (downloader != null) {
                 if (downloader.isRunning()) {
                     L.w("Task has been started!");
-                    return true;
+                    return false;
                 } else {
                     throw new IllegalStateException("Downloader instance with same tag has not been destroyed!");
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /** 额外API: 获取数据库中已下载文件的信息. */

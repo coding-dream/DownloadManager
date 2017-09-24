@@ -26,6 +26,11 @@ public abstract class Callback<T> {
     };
 
     /** UI Thread */
+    public void onConnectPaused() {
+        // nothing to do(because downloaderImpl.pause() callback.onDownloadPaused()  )
+    }
+
+    /** UI Thread */
     public void onConnectFailed(DownloadException e){
         onDownloadFailed(e);// 把onConnectFailed 当做 onDownloadFailed 处理
     };

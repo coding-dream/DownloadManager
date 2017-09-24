@@ -1,6 +1,9 @@
 package com.less.downloadmanager;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.less.downloadmanager.lib.DownloadException;
 import com.less.downloadmanager.lib.DownloadManager;
