@@ -1,8 +1,9 @@
 ## DownloadManager 文件下载器
 多线程下载，支持断点续传，分为Android和Java两个版本。
 
-下面是一个使用案例:
 ![效果图](screenshots/show.png)
+
+使用案例:
 
 ```
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
