@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.less.downloadmanager.lib.DownloadException;
 import com.less.downloadmanager.lib.DownloadManager;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         findViewById(R.id.btn_start).setOnClickListener(this);
         findViewById(R.id.btn_pause).setOnClickListener(this);
+        findViewById(R.id.btn_cancel).setOnClickListener(this);
 
         progressBar = (ProgressBar) findViewById(R.id.pb_download);
     }
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_pause:
                 pause(tag);
                 break;
+            case R.id.btn_cancel:
+                cancel(tag);
             default:
                 break;
 
@@ -63,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onStart() {
                 L.d("=====> onStart");
+                show("=====> onStart");
             }
 
             @Override
@@ -72,19 +77,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             @Override
+            public void onDownloadPaused() {
+                L.d("=====> onDownloadPaused: " );
+                show("=====> onDownloadPaused");
+            }
+
+            @Override
+            public void onDownloadCanceled() {
+                L.d("=====> onDownloadCanceled: " );
+                show("=====> onDownloadCanceled");
+            }
+
+            @Override
             public void onDownloadFailed(DownloadException e) {
-                e.printStackTrace();
                 L.d("=====> onDownloadFailed: " + e.getErrorMessage());
+                show("=====> onDownloadFailed: " + e.getErrorMessage());
             }
 
             @Override
             public void onDownloadCompleted(File file) {
                 L.d("=====> onDownloadCompleted: " + file.getAbsolutePath());
+                show("=====> onDownloadCompleted " + file.getAbsolutePath());
             }
         });
     }
 
     private void pause(String tag) {
         DownloadManager.getInstance(this).pause(tag);
+    }
+
+    private void cancel(String tag) {
+        DownloadManager.getInstance(this).cancel(tag);
+    }
+
+    private void show(String message) {
+        Toast.makeText(MainActivity.this,message, Toast.LENGTH_SHORT).show();
     }
 }

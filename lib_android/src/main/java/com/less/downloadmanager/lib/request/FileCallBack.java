@@ -18,14 +18,10 @@ public abstract class FileCallBack extends Callback<File>{
     public abstract void onDownloadProgress(long finished, long totalLength, int percent);
 
     @Override
-    public void onDownloadPaused() {
-        // nothing to do
-    }
+    public abstract void onDownloadPaused();
 
     @Override
-    public void onDownloadCanceled() {
-        // nothing to do
-    }
+    public abstract void onDownloadCanceled();
 
     @Override
     public abstract void onDownloadFailed(DownloadException e);

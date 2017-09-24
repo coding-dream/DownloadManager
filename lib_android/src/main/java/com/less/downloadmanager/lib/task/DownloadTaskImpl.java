@@ -205,7 +205,7 @@ public abstract class DownloadTaskImpl implements DownloadTask {
                 }
             } catch (IOException e) {
                 updateDB(mThreadInfo);// 只在pause 和 传输时异常更新了DB,其他异常没有更新(所以出错时候个别线程没有updateDB),没有更新的不用担心，重新start 重新下载那部分数据。
-                throw new DownloadException(DownloadStatus.STATUS_FAILED, e);
+                throw new DownloadException(DownloadStatus.STATUS_FAILED, "IO transferData is error,check internet is ok ",e);
             }
         }
     }

@@ -101,8 +101,7 @@ public class MainActivity {
 
             @Override
             public void onDownloadFailed(DownloadException e) {
-            	e.printStackTrace();
-                System.out.println("============》 onDownloadFailed" + e);
+                System.out.println("============》 onDownloadFailed" + e.getErrorCode() + " " + e.getErrorMessage());
             }
 
             @Override
@@ -114,6 +113,7 @@ public class MainActivity {
             @Override
             public void onDownloadCompleted(Object o) {
                 System.out.println("============》 onDownloadCompleted");
+
             }
         });
 
