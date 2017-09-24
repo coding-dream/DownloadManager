@@ -24,51 +24,33 @@ public class MainActivity {
         String tag = String.valueOf(url.hashCode());
 
         // 方式一
-        /*
         new GetBuilder()
                 .name("JOKER_山本彩.mp4")
                 .folder(new File("F:/"))
                 .uri(url)
                 .tag(tag)
                 .build()
-                .execute(new Callback() {
+                .execute(new FileCallBack() {
                     @Override
-                    public void onStart() {
-                        System.out.println("begin===========>");
+                    public void onStart(String tag) {
+                        // UI Thread
                     }
 
                     @Override
-                    public void onDownloadProgress(long finished, long totalLength, int percent) {
-                        System.out.println("finished: " + finished + " totalLength:" + totalLength + "percent: " + percent);
-                    }
-
-                    @Override
-                    public void onDownloadPaused() {
-                        System.out.println("============》 onDownloadPaused");
-                    }
-
-                    @Override
-                    public void onDownloadCanceled() {
-                        System.out.println("============》 onDownloadCanceled");
+                    public void onDownloadProgress(String tag, long finished, long totalLength, int percent) {
+                        // UI Thread
                     }
 
                     @Override
                     public void onDownloadFailed(DownloadException e) {
-                        System.out.println("============》 onDownloadFailed" + e);
+                        // UI Thread
                     }
 
                     @Override
-                    public Object parseResponse(File file) {
-                        System.out.println("============》 parseResponse");
-                        return null;
-                    }
-
-                    @Override
-                    public void onDownloadCompleted(Object o) {
-                        System.out.println("============》 onDownloadCompleted");
+                    public void onDownloadCompleted(File file) {
+                        // UI Thread
                     }
                 });
-		*/
 
         // 方式二(需要暂停取消的情况)
         RequestCall call = new GetBuilder()

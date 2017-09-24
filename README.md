@@ -132,6 +132,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 `
 ```
 
+## 简单调用
+如果只想获取下载进度和结果，还可以这样调用。
+
+
+```
+ new GetBuilder()
+		.name("JOKER_山本彩.mp4")
+		.folder(new File("F:/"))
+		.uri(url)
+		.tag(tag)
+		.build()
+		.execute(new FileCallBack() {
+			@Override
+			public void onStart(String tag) {
+				// UI Thread
+			}
+
+			@Override
+			public void onDownloadProgress(String tag, long finished, long totalLength, int percent) {
+				// UI Thread
+			}
+
+			@Override
+			public void onDownloadFailed(DownloadException e) {
+				// UI Thread
+			}
+
+			@Override
+			public void onDownloadCompleted(File file) {
+				// UI Thread
+			}
+		});
+```
+
+## 取消一个下载任务
+`DownloadManager.getInstance(this).cancel(tag);`
+
+## 暂停一个下载任务
+`DownloadManager.getInstance(this).pause(tag);`
+
+## 取消所有下载任务
+`DownloadManager.getInstance(this).pauseAll();`
+
+## 暂停所有下载任务
+`DownloadManager.getInstance(this).cancelAll();`
+
 ## 依赖
 Android: 拷贝libs目录downloader-android-1.0.jar到项目引用即可。
 
