@@ -15,10 +15,10 @@ import java.io.FileReader;
 public abstract class StringCallback extends Callback<String>{
 
     @Override
-    public abstract void onStart();
+    public abstract void onStart(String tag);
 
     @Override
-    public  void onDownloadProgress(long finished, long totalLength, int percent){}
+    public  void onDownloadProgress(String tag,long finished, long totalLength, int percent){}
 
     @Override
     public void onDownloadPaused() {}

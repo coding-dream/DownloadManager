@@ -80,12 +80,12 @@ public class MainActivity {
 
         DownloadManager.getInstance().start(call,new Callback() {
             @Override
-            public void onStart() {
+            public void onStart(String tag) {
                 System.out.println("begin===========>");
             }
 
             @Override
-            public void onDownloadProgress(long finished, long totalLength, int percent) {
+            public void onDownloadProgress(String tag,long finished, long totalLength, int percent) {
             	System.out.println("finished: " + finished + " totalLength:" + totalLength + "percent: " + percent);
             }
 
@@ -125,12 +125,12 @@ public class MainActivity {
 			DownloadManager.getInstance().start(call,new FileCallBack() {
 
 				@Override
-				public void onStart() {
+				public void onStart(String tag) {
 					System.out.println("re begin===========>");
 				}
 
 				@Override
-				public void onDownloadProgress(long finished, long totalLength, int percent) {
+				public void onDownloadProgress(String tag,long finished, long totalLength, int percent) {
 	            	System.out.println("re finished: " + finished + " totalLength:" + totalLength + "percent: " + percent);
 				}
 

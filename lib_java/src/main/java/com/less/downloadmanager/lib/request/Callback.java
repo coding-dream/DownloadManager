@@ -12,7 +12,7 @@ public abstract class Callback<T> {
     /**
      * UI Thread
      */
-    public abstract void onStart();
+    public abstract void onStart(String tag);
 
     /** UI Thread */
     public void onConnecting() {}
@@ -40,7 +40,7 @@ public abstract class Callback<T> {
      * @param totalLength 文件总长度
      * @param percent 百分比
      */
-    public abstract void onDownloadProgress(long finished, long totalLength , int percent);
+    public abstract void onDownloadProgress(String tag,long finished, long totalLength , int percent);
 
     /** UI Thread */
     public abstract void onDownloadPaused();
@@ -56,12 +56,12 @@ public abstract class Callback<T> {
     public static Callback CALLBACK_DEFAULT = new Callback() {
 
         @Override
-        public void onStart() {
+        public void onStart(String tag) {
 
         }
 
         @Override
-        public void onDownloadProgress(long finished, long totalLength, int percent) {
+        public void onDownloadProgress(String tag,long finished, long totalLength, int percent) {
 
         }
 

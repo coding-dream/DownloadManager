@@ -76,7 +76,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                mCallback.onStart();
+                mCallback.onStart(mTag);
             }
         });
         mConnectTask = new ConnectTaskImpl(mCall.getRequest.mUri, new OnConnectListener() {
@@ -197,7 +197,7 @@ public class DownloaderImpl implements Downloader, OnDownloadListener{
             mPlatform.execute(new Runnable() {
                 @Override
                 public void run() {
-                    mCallback.onDownloadProgress(finished, length, percent);
+                    mCallback.onDownloadProgress(mTag,finished, length, percent);
                 }
             });
         }

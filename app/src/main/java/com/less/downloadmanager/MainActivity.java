@@ -19,34 +19,57 @@ import com.less.downloadmanager.lib.util.L;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    private ProgressBar progressBar;
+    private ProgressBar progressBar1;
+    private ProgressBar progressBar2;
+
+    private String tag1 = "";
+    private String tag2 = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.btn_start).setOnClickListener(this);
-        findViewById(R.id.btn_pause).setOnClickListener(this);
-        findViewById(R.id.btn_cancel).setOnClickListener(this);
+        findViewById(R.id.btn_start1).setOnClickListener(this);
+        findViewById(R.id.btn_pause1).setOnClickListener(this);
+        findViewById(R.id.btn_cancel1).setOnClickListener(this);
 
-        progressBar = (ProgressBar) findViewById(R.id.pb_download);
+        findViewById(R.id.btn_start2).setOnClickListener(this);
+        findViewById(R.id.btn_pause2).setOnClickListener(this);
+        findViewById(R.id.btn_cancel2).setOnClickListener(this);
+
+        progressBar1 = (ProgressBar) findViewById(R.id.pb_download1);
+        progressBar2 = (ProgressBar) findViewById(R.id.pb_download2);
     }
 
     @Override
     public void onClick(View view) {
-        String name = "坂井泉水.mp4";
-        String url = "http://220.194.199.176/4/k/l/p/d/klpdruzqjxgpkyoxeudmpjqvnwazxp/hc.yinyuetai.com/7348015EA9536F7A49FDD32FA0B025B2.mp4?sc=1e26e64ef11e8626&br=781&vid=3048701&aid=32393&area=ML&vst=0&ptp=mv&rd=yinyuetai.com";
-        String tag = String.valueOf(url.hashCode());
+        String name1 = "坂井泉水.mp4";
+        String url1 = "http://220.194.199.176/4/k/l/p/d/klpdruzqjxgpkyoxeudmpjqvnwazxp/hc.yinyuetai.com/7348015EA9536F7A49FDD32FA0B025B2.mp4?sc=1e26e64ef11e8626&br=781&vid=3048701&aid=32393&area=ML&vst=0&ptp=mv&rd=yinyuetai.com";
+        tag1 = String.valueOf(url1.hashCode());
+
+        String name2 = "Burning-Maria Arredondo.mp4";
+        String url2 = "http://220.194.199.185/1/e/e/u/i/eeuioqayptkihjaylfnmarwejpfwcx/hc.yinyuetai.com/2E67013A8E442003862822D8115227D6.flv?sc=053dee7e67c31614&br=777&vid=7621&aid=1802&area=US&vst=0&ptp=mv&rd=yinyuetai.com";
+        tag2 = String.valueOf(url2.hashCode());
 
         switch (view.getId()) {
-            case R.id.btn_start:
-                start(name,url,tag);
+            case R.id.btn_start1:
+                start(name1,url1,tag1);
                 break;
-            case R.id.btn_pause:
-                pause(tag);
+            case R.id.btn_pause1:
+                pause(tag1);
                 break;
-            case R.id.btn_cancel:
-                cancel(tag);
+            case R.id.btn_cancel1:
+                cancel(tag1);
+
+            case R.id.btn_start2:
+                start(name2,url2,tag2);
+                break;
+            case R.id.btn_pause2:
+                pause(tag2);
+                break;
+            case R.id.btn_cancel2:
+                cancel(tag2);
+                break;
             default:
                 break;
 
@@ -57,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         File folder = Environment.getExternalStorageDirectory();
 
         // 方式二(文本类型的内容获取)
-        RequestCall call = new GetBuilder()
+        final RequestCall call = new GetBuilder()
                 .name(name)
                 .folder(folder)
                 .uri(url)
@@ -65,15 +88,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .build();
         DownloadManager.getInstance(this).start(call, new FileCallBack() {
             @Override
-            public void onStart() {
-                L.d("=====> onStart");
-                show("=====> onStart");
+            public void onStart(String tag) {
+                L.d("=====> onStart " + tag);
+                show("=====> onStart " + tag);
             }
 
             @Override
-            public void onDownloadProgress(long finished, long totalLength, int percent) {
+            public void onDownloadProgress(String tag,long finished, long totalLength, int percent) {
                 L.d("=====> onDownloadProgress: " + percent);
-                progressBar.setProgress(percent);
+                if (tag.equals(tag1)) {
+                    progressBar1.setProgress(percent);
+                } else if (tag.equals(tag2)) {
+                    progressBar2.setProgress(percent);
+                }
             }
 
             @Override

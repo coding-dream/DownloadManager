@@ -12,10 +12,10 @@ import java.io.File;
 public abstract class FileCallBack extends Callback<File>{
 
     @Override
-    public abstract void onStart() ;
+    public abstract void onStart(String tag) ;
 
     @Override
-    public abstract void onDownloadProgress(long finished, long totalLength, int percent);
+    public abstract void onDownloadProgress(String tag,long finished, long totalLength, int percent);
 
     @Override
     public abstract void onDownloadPaused();
