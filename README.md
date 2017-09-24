@@ -2,7 +2,7 @@
 多线程下载，支持断点续传，分为Android和Java两个版本。
 
 下面是一个使用案例:
-![效果图](screenshots/show.jpg)
+![效果图](screenshots/show.png)
 
 ```
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 ## 依赖
 Android: 拷贝libs目录downloader-android-1.0.jar到项目引用即可。
+
 Java: 拷贝libs目录downloader-java-1.0.jar到项目中，该jar需要额外引入sqlite-jdbc.jar，本项目使用的版本是sqlite-jdbc-3.8.11.1.jar。
 
 
