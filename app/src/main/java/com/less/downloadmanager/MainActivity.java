@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        String name = "中岛美雪.mp4";
+        String name = "坂井泉水.mp4";
         String url = "http://220.194.199.176/4/k/l/p/d/klpdruzqjxgpkyoxeudmpjqvnwazxp/hc.yinyuetai.com/7348015EA9536F7A49FDD32FA0B025B2.mp4?sc=1e26e64ef11e8626&br=781&vid=3048701&aid=32393&area=ML&vst=0&ptp=mv&rd=yinyuetai.com";
         String tag = String.valueOf(url.hashCode());
 

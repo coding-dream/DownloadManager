@@ -48,7 +48,7 @@ public  class Platform {
                 private Handler handler = new Handler(Looper.myLooper());
 
                 @Override
-                public void execute(@NonNull Runnable runnable) {
+                public void execute(Runnable runnable) {
                     handler.post(runnable);
                 }
             };

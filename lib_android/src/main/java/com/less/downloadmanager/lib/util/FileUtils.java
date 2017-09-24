@@ -25,11 +25,11 @@ public class FileUtils {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
-    public static final String getPrefix(@NonNull String fileName) {
+    public static final String getPrefix(String fileName) {
         return fileName.substring(0, fileName.lastIndexOf("."));
     }
 
-    public static final String getSuffix(@NonNull String fileName) {
+    public static final String getSuffix(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
