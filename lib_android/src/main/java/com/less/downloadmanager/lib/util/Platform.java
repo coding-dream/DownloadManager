@@ -45,7 +45,7 @@ public  class Platform {
                 return executor;
             }
             return executor = new Executor() {
-                private Handler handler = new Handler(Looper.myLooper());
+                private Handler handler = new Handler(Looper.getMainLooper());
 
                 @Override
                 public void execute(Runnable runnable) {
