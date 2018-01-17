@@ -1,19 +1,17 @@
 package com.less.downloadmanager;
 
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.less.downloadmanager.lib.DownloadException;
 import com.less.downloadmanager.lib.DownloadManager;
-import com.less.downloadmanager.lib.request.Callback;
 import com.less.downloadmanager.lib.request.FileCallBack;
 import com.less.downloadmanager.lib.request.GetBuilder;
 import com.less.downloadmanager.lib.request.RequestCall;
-import com.less.downloadmanager.lib.request.StringCallback;
 import com.less.downloadmanager.lib.util.L;
 
 import java.io.File;
@@ -43,12 +41,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        String name1 = "坂井泉水.mp4";
-        String url1 = "http://220.194.199.176/4/k/l/p/d/klpdruzqjxgpkyoxeudmpjqvnwazxp/hc.yinyuetai.com/7348015EA9536F7A49FDD32FA0B025B2.mp4?sc=1e26e64ef11e8626&br=781&vid=3048701&aid=32393&area=ML&vst=0&ptp=mv&rd=yinyuetai.com";
+        String name1 = "I Knew You Were Trouble - Taylor Swift.mp4";
+        String url1 = "http://112.253.22.151/6/k/r/g/s/krgsoayshzaaeisycjrboohohceasy/hc.yinyuetai.com/BE87013B952979AF2852C6E8FCEB9071.flv?sc=9bc9b57781422a20&br=778&vid=564876&aid=122&area=US&vst=0&ptp=mv&rd=yinyuetai.com";
         tag1 = String.valueOf(url1.hashCode());
 
-        String name2 = "Burning-Maria Arredondo.mp4";
-        String url2 = "http://220.194.199.185/1/e/e/u/i/eeuioqayptkihjaylfnmarwejpfwcx/hc.yinyuetai.com/2E67013A8E442003862822D8115227D6.flv?sc=053dee7e67c31614&br=777&vid=7621&aid=1802&area=US&vst=0&ptp=mv&rd=yinyuetai.com";
+        String name2 = "张韶涵音乐合集.mp4";
+        String url2 = "http://112.253.22.164/1/c/q/z/y/cqzytmgcimzgqqlxklzmnokygcfrhw/hc.yinyuetai.com/81D1015A07599335AF9DC12F4845748B.mp4?sc=6c87686cc1c1a7ac&br=785&vid=2786192&aid=168&area=HT&vst=3&ptp=mv&rd=yinyuetai.com";
         tag2 = String.valueOf(url2.hashCode());
 
         switch (view.getId()) {

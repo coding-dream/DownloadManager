@@ -22,7 +22,7 @@ android {
 }
 
 task buildJar_android(type: Jar, dependsOn: ['compileReleaseJavaWithJavac']) { //  task buildJar(type: Jar, dependsOn: ['build'])
-    archiveName = "downloader-android-1.0.jar"// 导出的jar文件的名称
+    archiveName = "downloader-android-1.1.jar"// 导出的jar文件的名称
     from('build/intermediates/classes/release')// 需打包的资源所在的路径集
     destinationDir = file('../libs') // 导出的jar文件的存放目录（未指定则默认存放在build/libs下）
 
@@ -34,11 +34,11 @@ task buildJar_android(type: Jar, dependsOn: ['compileReleaseJavaWithJavac']) { /
 }
 
 task buildJar_java(type: Jar, dependsOn: ['compileReleaseJavaWithJavac']) { //  task buildJar(type: Jar, dependsOn: ['build'])
-    archiveName = "downloader-java-1.0.jar"// 导出的jar文件的名称
+    archiveName = "downloader-java-1.1.jar"// 导出的jar文件的名称
     from('../lib_java/build/classes/main')// 需打包的资源所在的路径集
     destinationDir = file('../libs') // 导出的jar文件的存放目录（未指定则默认存放在build/libs下）
 
-    exclude "com/less/downloadmanager/MainActivity.class"
+    exclude "com/less/downloadmanager/App.class"
     exclude('**/R.class')
     exclude('**/R\$*.class')
     include "**/*.*"
